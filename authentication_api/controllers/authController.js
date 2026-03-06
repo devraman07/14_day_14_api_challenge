@@ -7,6 +7,12 @@ import jwt from "jsonwebtoken";
 export const signUpcontroller = async (req, res) => {
   const { name, email, password } = req.body;
 
+  if(!name || !email || !password) {
+    return res.json({
+      message : "fill the name email and pasword to complete signup"
+    });
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -30,6 +36,12 @@ export const signUpcontroller = async (req, res) => {
 
 export const Logincontroller = async (req, res) => {
   const { email, password } = req.body;
+
+  if(!email || !password) {
+    return res.json({
+      message: "enter your login email and password"
+    });
+  }
 
   try {
     const result = await db.select().from(users).where(eq(users.email, email));
