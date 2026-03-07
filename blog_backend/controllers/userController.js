@@ -1,8 +1,7 @@
-import bcrypt from "bcrypt";
 import { db } from "../../authentication_api/configs/db.js";
 import { users } from "../configs/schema/user.js";
 import { eq } from "drizzle-orm";
-import jwt from "jsonwebtoken";
+import { generateToken } from "../utils/generateToken.js";
 
 export const signupcontroller = async (req, res) => {
   const { name, email, password } = req.body;
@@ -14,7 +13,7 @@ export const signupcontroller = async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = generateToken;
 
     if(hashedPassword.length < 10) {
       return res.status(403).json({
@@ -77,14 +76,7 @@ export const Loginhandler = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "30m" },
-    );
+    const token = generateToken;
 
     return res.status(200).json({
       message: "login successful",
