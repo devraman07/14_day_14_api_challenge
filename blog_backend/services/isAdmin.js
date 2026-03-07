@@ -3,13 +3,13 @@ export const RoleCheck = (req, res, next) => {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: "Unauthorized",
+        message: "Tu nahi hai admin",
       });
     }
 
     if (req.user.role !== "admin") {
       return res.status(403).json({
-        message: "Admin access required",
+        message: "pehle admin ban phir ye karna",
       });
     }
 

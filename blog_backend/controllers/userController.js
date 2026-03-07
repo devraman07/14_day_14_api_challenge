@@ -7,8 +7,20 @@ import jwt from "jsonwebtoken";
 export const signupcontroller = async (req, res) => {
   const { name, email, password } = req.body;
 
+  if(!name || !email || !password) {
+    return res.status(401).json({
+      message : "name email aur password daal lawde"
+    });
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    if(hashedPassword.length < 10) {
+      return res.status(403).json({
+        message : " thoda bada passowrd daal lawde"
+      });
+    }
 
     const user = await db
       .insert(users)
@@ -39,6 +51,11 @@ export const signupcontroller = async (req, res) => {
 
 export const Loginhandler = async (req, res) => {
   const { email, password } = req.body;
+    if(!email || !password) {
+    return res.status(401).json({
+      message : "email aur password daal lawde"
+    });
+  }
 
   try {
     const result = await db.select().from(users).where(eq(users.email, email));

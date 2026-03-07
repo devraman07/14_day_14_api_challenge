@@ -5,6 +5,12 @@ import { eq } from "drizzle-orm";
 export const AddBlog = async (req, res) => {
   const { title, content } = req.body;
 
+  if(!title || !content) {
+    return res.status(403).json({
+      message : "pehle blog likhle bhai",
+    });
+  }
+
   try {
     const Blog = await db
       .insert(blogs)
