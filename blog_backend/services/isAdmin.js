@@ -3,7 +3,7 @@ export const RoleCheck = (req, res, next) => {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: "Tu nahi hai admin",
+        message: "user kaha hai",
       });
     }
 
