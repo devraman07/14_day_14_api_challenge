@@ -1,5 +1,8 @@
 import { db } from "../configs/db.js";
 import { movies } from "../configs/schemas/movie.js";
+import { fetchMovies } from "../services/movieServices.js";
+
+
 
 export const addmovie = async (req, res) => {
   try {
@@ -54,4 +57,30 @@ export const addmovie = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+
+
+
+export const getMovies = async (req, res) => {
+
+  try {
+
+    const data = await fetchMovies(req.query);
+
+    return res.status(200).json({
+      message: "Movies fetched successfully",
+      data: data.movies,
+      nextCursor: data.nextCursor
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: "Error fetching movies",
+      error: error.message
+    });
+
+  }
+
 };
