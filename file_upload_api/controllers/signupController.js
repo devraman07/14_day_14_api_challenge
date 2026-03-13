@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { db } from "../configs/db.js";
 import { users } from "../configs/schemas/user.js";
 import { uploadTocloudinary } from "../services/uploadToCloud.js";
@@ -5,6 +6,17 @@ import bcrypt from "bcrypt";
 
 export const signupController = async (req, res) => {
   const { name, email, password } = req.body;
+
+ const existingEmail = await db
+  .select({ id: users.id })
+  .from(users)
+  .where(eq(users.email, email));
+
+  if(existingEmail.length > 0) {
+    return res.status(409).json({
+      message : "email already exists"
+    });
+  }
   
 
   try {
