@@ -33,13 +33,7 @@ export const signupcontroller = async (req, res) => {
       })
       .returning();
 
-    try {
-      await sendMail(email, otp);
-      console.log("mail sent successfully");
-    } catch (mailError) {
-      console.log("mail error:", mailError.message);
-      r;
-    }
+    await sendMail(email, otp);
 
     const user = result[0];
 
@@ -94,3 +88,64 @@ export const login = async (req, res) => {
     });
   }
 };
+
+
+export const verifyEmail = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                message: "email and otp are required"
+            });
+        }
+
+        
+        const result = await db.select().from(users).where(eq(users.email, email));
+
+        if (result.length === 0) {
+            return res.status(404).json({
+                message: "user not found"
+            });
+        }
+
+        const user = result[0];
+
+        
+        if (user.isVerified) {
+            return res.status(400).json({
+                message: "user is already verified"
+            });
+        }
+
+        
+        if (user.otp !== otp) {
+            return res.status(400).json({
+                message: "invalid otp"
+            });
+        }
+
+        
+        if (user.otpExpires < new Date()) {
+            return res.status(400).json({
+                message: "otp has expired, please signup again"
+            });
+        }
+
+      
+        await db.update(users)
+            .set({
+                isVerified: true,
+                otp: null,
+                otpExpires: null
+            })
+            .where(eq(users.email, email));
+
+        return res.status(200).json({
+            message: "email verified successfully, you can now login"
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}

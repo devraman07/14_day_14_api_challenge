@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import { authRouter } from "./routes/authRoutes.js";
+import { transporter } from "./configs/nodemailer.config.js";
 
 const app = express();
 
@@ -22,4 +23,6 @@ app.get('/', (req , res) => {
 app.listen(port, ()=> {
     console.log(`server is running on http://localhost:${port}`);
 });
+
+
 
