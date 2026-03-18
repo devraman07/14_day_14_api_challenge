@@ -1,5 +1,7 @@
 import express from "express";
 import { userRouter } from "./routes/userRoutes.js";
+import { projectRouter } from "./routes/projectroutes.js";
+import { taskRouter } from "./routes/tasksRoutes.js";
 
 const projectApp = express();
 const port = 3000;
@@ -8,6 +10,8 @@ projectApp.use(express.json());
 
 
 projectApp.use('/api/user', userRouter);
+projectApp.use('/api/projects', projectRouter);
+projectApp.use('/api/task', taskRouter);
 
 
 projectApp.get('/', (req, res) => {
