@@ -78,11 +78,13 @@ export const updateTask = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const [task] = await db
-      .update(tasks)
-      .set({ status })
-      .where(eq(tasks.id, id))
-      .returning();
+    
+    const result = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.id, id));
+
+    const task = result[0];
 
     if (!task) {
       return res.status(404).json({
@@ -90,10 +92,25 @@ export const updateTask = async (req, res) => {
       });
     }
 
+    
+    if (task.assignedTo !== req.user.id) {
+      return res.status(403).json({
+        message: "You can only update your assigned task",
+      });
+    }
+
+    
+    const [updatedTask] = await db
+      .update(tasks)
+      .set({ status })
+      .where(eq(tasks.id, id))
+      .returning();
+
     return res.status(200).json({
       message: "Task updated",
-      data: task,
+      data: updatedTask,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Error updating tasks",

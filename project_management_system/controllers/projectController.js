@@ -1,30 +1,41 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../configs/db.js";
 import { projects } from "../schemas/projects.js";
-import { users } from "../schemas/user.js";
+import { projectMembers } from "../schemas/projectMember.js";
+
 
 export const addproject = async (req, res) => {
   const { title, description } = req.body;
 
   if (!title || !description) {
-    return res.json({
+    return res.status(400).json({
       message: "fill the required details",
     });
   }
+
   try {
+    
     const [project] = await db
       .insert(projects)
       .values({
-        title: title,
-        description: description,
+        title,
+        description,
         ownerId: req.user.id,
       })
       .returning();
+
+   
+    await db.insert(projectMembers).values({
+      projectId: project.id,
+      userId: req.user.id,
+      role: "OWNER",
+    });
 
     return res.status(201).json({
       message: "project created successfully",
       data: project,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Error creating project",
